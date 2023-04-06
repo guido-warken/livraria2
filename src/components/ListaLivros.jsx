@@ -9,6 +9,17 @@ export const ListaLivrosComponent = () => {
     useEffect(() => {
         document.title = `Lista com ${listaLivros.length} livros`;
     }, [listaLivros]);
+    useEffect(() => {
+        async function fetchLivros() {
+            const response = await fetch('http://localhost:3000/livros');
+            const data = await response.json();
+            await data.map(l=> new Livro(l.titulo, l.ano, l.autor));
+            const livrosDoServidor = listaLivros.concat(data);
+            console.log(livrosDoServidor);
+            setListaLivros(livrosDoServidor);
+                    }
+                    fetchLivros();
+    }, []);
     return (
         <ul>
             {listaLivros.map((l => (
