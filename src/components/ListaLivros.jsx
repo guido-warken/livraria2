@@ -6,25 +6,29 @@ const livros = [new Livro("Senhor dos aneis", 2004, "Guido Filho"), new Livro("H
 
 export const ListaLivrosComponent = () => {
     const [listaLivros, setListaLivros] = useState(livros);
+
     useEffect(() => {
         document.title = `Lista com ${listaLivros.length} livros`;
     }, [listaLivros]);
+
     useEffect(() => {
         async function fetchLivros() {
             const response = await fetch('http://localhost:3000/livros');
             const data = await response.json();
-            await data.map(l=> new Livro(l.titulo, l.ano, l.autor));
-            const livrosDoServidor = listaLivros.concat(data);
+            let livrosDoServidor = await data.map(l => new Livro(l.titulo, l.ano, l.autor));
+            livrosDoServidor = livrosDoServidor.concat(livros);
             console.log(livrosDoServidor);
             setListaLivros(livrosDoServidor);
-                    }
-                    fetchLivros();
+        }
+
+        fetchLivros();
     }, []);
+
     return (
-        <ul>
-            {listaLivros.map((l => (
-                <LivroComponent titulo={l.titulo} ano={l.ano} />
-            )))}
-        </ul>
+    <ul>
+        {listaLivros.map((l) => (
+            <LivroComponent titulo={l.titulo} ano={l.ano} />
+        ))}
+    </ul>
     );
 }
