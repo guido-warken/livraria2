@@ -1,39 +1,40 @@
 import React, { useState } from 'react';
-import { Livro } from '../models/livro';
 
-export const FormLivro = () => {
+export const FormLivro = ({nextId}) => {
     const [titulo, setTitulo] = useState('');
     const [ano, setAno] = useState('');
     const [autor, setAutor] = useState('');
 
     async function handleSubmit(e) {
         e.preventDefault();
-        const responseGet = await fetch('http://localhost:3000/livros');
-        const livrosDoServidor = responseGet.json();
         let livro = {
-            id: livrosDoServidor.length + 1,
+            id: nextId,
             titulo,
             ano,
             autor
         };
-        let livroStr = JSON.stringify(livro);
-        const responsePost = await fetch('http://localhost:3000/livros', {
+        const response = await fetch('http://localhost:3000/livros', {
             method: 'POST',
-            body: livroStr,
+            body: JSON.stringify(livro),
             headers: {
                 "Content-Type": "application/json"
             }
         });
         let resultado;
-        if (responsePost.ok) {
-            resultado = await responsePost.json();
+        if (response.ok) {
+            resultado = await response.json();
         } else {
-            resultado = await responsePost.text();
+            resultado = await response.text();
         }
-        console.log(resultado);
+        setAno('');
+        setAutor('');
+        setTitulo('');
     }
 
     return (
+        <>
+              <h1>Cadastrar novo livro</h1><br/>
+
         <form onSubmit={handleSubmit}>
             <label htmlFor="titulo">Titulo do livro:</label>
             <input type="text" id="titulo" value={titulo} onChange={(e) => setTitulo(e.target.value)} /><br />
@@ -43,5 +44,6 @@ export const FormLivro = () => {
             <input type="text" id="autor" value={autor} onChange={(e) => setAutor(e.target.value)} /><br />
             <button type="submit">Salvrar</button>
         </form>
+        </>
     );
 }
